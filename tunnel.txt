@@ -1,0 +1,94 @@
+***********************************************************
+**  TTTTTT   UU  UU   NN  NN   NN  NN   EEEEEE   LL      **
+**    TT     UU  UU   NNN NN   NNN NN   EE       LL      **
+**    TT     UU  UU   NN NNN   NN NNN   EEEEEE   LL      **
+**    TT     UU  UU   NN  NN   NN  NN   EE       LL      **
+**    TT     UUUUUU   NN  NN   NN  NN   EEEEEE   LLLLLL  **
+***********************************************************
+
+Tunnel v1.5
+------------
+By Jordan Clifford (nike)
+email: jc.nike@netzero.net
+
+About
+-----
+I have been learning asm for quite
+a while now... so I finally decided
+to make a game. This is my first
+ASM game... so don't expect too much.
+It was coded in ~ one week.
+
+Object of the game
+------------------
+The object of the game is simple.
+Steer your way down the tunnel
+w/o crashing into the walls.
+Last the longest and get a high
+score.
+
+Controls
+--------
+At the title screen:
+left - decrease difficulty
+right - increase difficulty
+Esc. - exit the game
+Enter - start playing the game
+
+In the game:
+left - steer left
+right - steer right
+Esc. - exit back to the title screen
+APPS - pause
+
+Features
+--------
+Three difficulty settings.
+High score table for each.
+Compatible with all known ROM versions.
+Full source distributed.
+
+HW2 compatible?!?!?!? (please mail me
+if it is(n't))
+
+History
+-------
+3/15/00 - Version 1.6
+	- fixed a few small bugs
+	- optimized a bit. (decreased the size by 6 bytes)
+3/11/00	- Version 1.5
+	- first public release
+
+Thanks to
+---------
+Thomas Fernique:
+for the high score routines.
+I just modified them.
+
+Brandon C.(poison):
+for the title picture, testing,
+and support.
+
+Everybody who plays this game
+
+Bugs
+----
+None currently known.
+
+Contact
+-------
+Please contact me for bug reports,
+suggestions, and comments, or just
+to let me know that people actually
+play the game.
+
+email: jc.nike@netzero.net
+aim:   jcnike89
+
+
+legal crap
+----------
+I am not responsible for anything this
+does to your calculator. You can modify 
+the source how ever you want. Just don't
+distribute modified versions. (please)
