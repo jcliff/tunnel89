@@ -50,21 +50,25 @@ start:
         ; Clear screen - direct implementation
         bsr     clr_scr
 
-        ; Decompress title graphic
-        lea     titlepic(pc),a0
-        lea     uncompress,a1
-        bsr     huffman_extract
+        ; NOSTUB: Skip Huffman decompression, draw text title instead
+        ; Original would decompress title graphic here
+        ; For nostub, we'll draw a simple text-based title screen
 
-        ; Draw title graphic to screen
-        lea     LCD_MEM+2+(30*4),a0
-        moveq   #40,d0
-titleloop:
-        moveq   #13,d1
-titleloop2:
-        move.b  (a1)+,(a0)+
-        dbra    d1,titleloop2
-        adda.l  #16,a0
-        dbra    d0,titleloop
+        ; Draw "TUNNEL v2.0" title
+        move.w  #1,-(sp)        ; Large font
+        jsr     call_177        ; FontSetSys
+        addq.l  #2,sp
+
+        move.w  #4,-(sp)
+        pea     title_text(pc)
+        move.w  #15,-(sp)       ; y
+        move.w  #35,-(sp)       ; x (centered-ish)
+        jsr     call_124        ; DrawStrXY
+        lea     10(sp),sp
+
+        move.w  #0,-(sp)        ; Small font
+        jsr     call_177        ; FontSetSys
+        addq.l  #2,sp
 
         ; Set font and draw strings
         move.w  #0,-(sp)
@@ -335,11 +339,12 @@ call_177:
         trap    #4
         rts
 
-; Simple Huffman decompression stub
-; For now, we'll need to decompress offline or implement full decompressor
+; Simple Huffman decompression - NOT NEEDED for nostub version
+; The nostub version uses text-based title instead of compressed graphic
+; This keeps the code simpler and avoids ~100 lines of Huffman decoder
 huffman_extract:
-        ; TODO: Implement Huffman decompression
-        ; For now, this is a placeholder
+        ; Not used in nostub version (text title instead)
+        ; Original DoorOS version decompressed SPRITE.HUF here
         rts
 
 ; Sprite drawing implementation
@@ -866,6 +871,7 @@ car:
         dc.b    %11111111
         dc.b    %11111111
 
+title_text      dc.b    "TUNNEL v2.0",0
 rankstr         dc.b    "1)",0,"2)",0,"3)",0,"4)",0
 invite          dc.b    "ENTER YOUR NAME",0
 youdietxt       dc.b    "CRASH!!!",0

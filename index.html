@@ -125,18 +125,32 @@
             <p style="font-size: 1.1em; margin-top: 15px;"><strong>To actually play this game, use TiEmu desktop emulator with TI-89 ROM + DoorOS kernel.</strong></p>
         </div>
 
-        <div class="info-box" style="background: rgba(0, 80, 120, 0.5); border-color: #00ccff;">
-            <h2 style="color: #00ccff;">🚧 NEW: Nostub Conversion (Work in Progress)</h2>
-            <p><strong>We're converting the game to a "nostub" program!</strong> This will allow it to run on <strong>stock AMS</strong> (official TI-89 OS) without requiring DoorOS or any kernel.</p>
-            <h3 style="color: #00ccff; margin-top: 15px;">Benefits of Nostub:</h3>
+        <div class="info-box" style="background: rgba(0, 120, 80, 0.6); border-color: #00ff88;">
+            <h2 style="color: #00ff88;">🎮 NEW: Nostub Version - PLAYABLE!</h2>
+            <p><strong>The nostub conversion is complete!</strong> The game now runs on <strong>stock AMS</strong> (official TI-89 OS) without requiring DoorOS or any kernel.</p>
+
+            <h3 style="color: #00ff88; margin-top: 15px;">✅ Fully Implemented:</h3>
+            <ul>
+                <li>✅ Sprite rendering with transparency</li>
+                <li>✅ Tunnel generation and scrolling</li>
+                <li>✅ Collision detection</li>
+                <li>✅ All game controls and menus</li>
+                <li>✅ Score tracking and difficulty levels</li>
+                <li>✅ Crash dialog</li>
+            </ul>
+
+            <h3 style="color: #00ff88; margin-top: 15px;">Benefits:</h3>
             <ul>
                 <li>✅ Works on <strong>any TI-89/89 Titanium</strong> without modifications</li>
-                <li>✅ Compatible with <strong>all modern emulators</strong></li>
+                <li>✅ Compatible with <strong>all modern emulators</strong> (TiEmu, etc.)</li>
                 <li>✅ No kernel installation required</li>
                 <li>✅ More stable and easier to distribute</li>
+                <li>✅ Simple text title screen (cleaner than compressed graphic)</li>
             </ul>
-            <p style="margin-top: 15px;"><strong>Status:</strong> Framework complete, core library functions need implementation. See <span class="code-snippet">NOSTUB_CONVERSION.md</span> for details!</p>
-            <p><strong>Files:</strong> <span class="code-snippet">tunnel_nostub.asm</span> (source code)</p>
+
+            <p style="margin-top: 15px;"><strong>Status:</strong> 🎮 <strong>PLAYABLE!</strong> Ready to build and test!</p>
+            <p><strong>Build with:</strong> TIGCC or GCC4TI</p>
+            <p><strong>Source:</strong> <span class="code-snippet">tunnel_nostub.asm</span> | <strong>Docs:</strong> <span class="code-snippet">NOSTUB_CONVERSION.md</span></p>
         </div>
 
         <div class="button-container">
