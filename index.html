@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TI-89 Tunnel Game Emulator</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #00cc00;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        .info-box {
+            background: rgba(0, 50, 0, 0.5);
+            border: 2px solid #00ff00;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .info-box h2 {
+            color: #00ff00;
+            margin-top: 0;
+        }
+        .info-box pre {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-left: 3px solid #00ff00;
+            overflow-x: auto;
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .launch-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #00ff00;
+            color: #000;
+            text-decoration: none;
+            font-size: 1.5em;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+        .launch-button:hover {
+            background: #00cc00;
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.8);
+            transform: scale(1.05);
+        }
+        .code-snippet {
+            background: rgba(0, 0, 0, 0.7);
+            color: #00ff00;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        ol, ul {
+            line-height: 1.8;
+        }
+        .nostalgia {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 1.2em;
+            color: #00cc00;
+        }
+        .file-info {
+            background: rgba(0, 30, 0, 0.8);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏎️ TUNNEL v1.6 🏎️</h1>
+        <div class="subtitle">By Jordan Clifford (nike) - Year 2000</div>
+
+        <div class="nostalgia">
+            💾 Relive the golden age of TI-89 assembly programming! 💾
+        </div>
+
+        <div class="info-box">
+            <h2>📖 About This Game</h2>
+            <p>This is a tunnel racing game written in 68000 assembly language back in 2000. Navigate your car through an ever-scrolling tunnel, avoiding the walls as they shift left and right. Test your reflexes across three difficulty levels!</p>
+
+            <div class="file-info">
+                <strong>Game Files:</strong>
+                <ul>
+                    <li><span class="code-snippet">tunnel.89z</span> - Compiled TI-89 program (ready to run!)</li>
+                    <li><span class="code-snippet">tunnel.asm</span> - Original 68K assembly source code</li>
+                    <li><span class="code-snippet">SPRITE.HUF</span> - Huffman-compressed title screen</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <a href="./emulator/index.html" class="launch-button">🚀 LAUNCH TI-89 EMULATOR</a>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <a href="./tunnel.89z" download style="color: #00ff00; text-decoration: none; padding: 10px 20px; border: 2px solid #00ff00; border-radius: 5px; display: inline-block;">
+                ⬇️ Download tunnel.89z (for TiEmu or real hardware)
+            </a>
+        </div>
+
+        <div class="info-box">
+            <h2>🎮 How to Load and Play</h2>
+            <ol>
+                <li>Click the <strong>LAUNCH TI-89 EMULATOR</strong> button above</li>
+                <li>Wait for the calculator to boot (you'll see the PedroM screen)</li>
+                <li>The emulator uses PedroM, an open-source TI-89 operating system</li>
+                <li>To load the game:
+                    <ul>
+                        <li><strong>Method 1:</strong> Use the emulator's built-in file transfer feature (if available)</li>
+                        <li><strong>Method 2:</strong> Look for a "Load Program" or "Link" option in the emulator</li>
+                        <li><strong>File to load:</strong> <span class="code-snippet">tunnel.89z</span> (located in the root directory)</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <h2>🕹️ Game Controls</h2>
+            <ul>
+                <li><strong>Left/Right Arrows:</strong> Move your car left and right</li>
+                <li><strong>ESC:</strong> Exit to menu</li>
+                <li><strong>ENTER:</strong> Start game from menu</li>
+                <li><strong>F1 (or ON):</strong> Pause game</li>
+                <li><strong>+/- (Up/Down Arrows on menu):</strong> Adjust difficulty</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h2>⚙️ Game Features</h2>
+            <ul>
+                <li>Three difficulty levels: Easy, Medium, Hard</li>
+                <li>High score table with top 4 racers per difficulty</li>
+                <li>Dynamic tunnel generation with randomized movements</li>
+                <li>Score tracking (1 point per 40 frames survived)</li>
+                <li>Collision detection</li>
+                <li>Custom sprite graphics</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h2>💻 Technical Details</h2>
+            <pre>Language:    68000 Assembly
+Platform:    TI-89 Calculator
+Version:     1.6
+Year:        2000
+Size:        ~2.6 KB (tunnel.89z)
+ROM Type:    Requires TI-89 ROM or PedroM
+
+Assembly includes:
+- Direct hardware access (screen buffer at $4C00)
+- Custom scrolling routine
+- Huffman decompression (ziplib)
+- Random number generation
+- High score persistence</pre>
+        </div>
+
+        <div class="info-box">
+            <h2>🔧 Alternative: Manual Transfer</h2>
+            <p>If the web emulator doesn't support direct file loading, you can:</p>
+            <ol>
+                <li>Download <strong>TiLP</strong> (TI Link Program) for your OS</li>
+                <li>Get a TI-89 desktop emulator like <strong>TiEmu</strong></li>
+                <li>Use TiLP to transfer <span class="code-snippet">tunnel.89z</span> to the emulator</li>
+                <li>Run the program from the VAR-LINK menu</li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <h2>📚 About the Code</h2>
+            <p>This project showcases classic calculator game development techniques:</p>
+            <ul>
+                <li>Direct framebuffer manipulation (160×100 monochrome display)</li>
+                <li>Efficient scrolling algorithms (copies screen data down 1 pixel per frame)</li>
+                <li>Assembly-optimized sprite rendering with masking</li>
+                <li>Compressed graphics (Huffman encoding for title screen)</li>
+                <li>Hardware keyboard scanning (direct port access)</li>
+            </ul>
+            <p>Check out <span class="code-snippet">tunnel.asm</span> to see the full commented source code!</p>
+        </div>
+
+        <div class="nostalgia">
+            <p>🎓 A piece of history from the era when students wrote games during math class! 🎓</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">
+                "It is unlikely to get any updates, as I no longer speak 68K assembly<br>
+                (not that I ever spoke it too well)" - Original README
+            </p>
+        </div>
+    </div>
+</body>
+</html>
