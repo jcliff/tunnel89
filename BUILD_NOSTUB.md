@@ -20,12 +20,49 @@ You need one of these toolchains:
 
 ## Building
 
-### Using TIGCC Command Line
+### Quick Build (Recommended)
+
+The easiest way to build is using the provided build script:
 
 ```bash
 # Navigate to the tunnel89 directory
 cd /path/to/tunnel89
 
+# Run the build script (tries multiple methods automatically)
+./build.sh
+```
+
+The build script will:
+1. Try local TIGCC if installed
+2. Fall back to Make if available
+3. Use Docker if Docker is installed
+4. Show installation instructions if nothing works
+
+### Using Make
+
+```bash
+# Build with Make
+make nostub
+
+# Clean build artifacts
+make clean
+
+# Show help
+make help
+```
+
+### Using Docker (No TIGCC Installation Needed!)
+
+```bash
+# Build with Docker (downloads TIGCC automatically)
+./build_docker.sh
+
+# First run takes ~5 minutes to set up, subsequent builds are fast
+```
+
+### Using TIGCC Command Line (Manual)
+
+```bash
 # Assemble the nostub version
 a68k tunnel_nostub.asm -o tunnel_nostub.89z -g
 

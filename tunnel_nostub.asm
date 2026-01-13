@@ -746,9 +746,35 @@ TooLow:
         popm.l d0-d1/a0-a2
         rts
 
-; Get the user's name
+; Get the user's name for high score entry
+; Simple text input using direct keyboard scanning
 ReadName:
-        ; TODO: Implement name input without DoorOS
+        pushm.l d0-d4/a0-a3
+
+        ; Get name entry position from high score data
+        lea     hiscores(PC),a2
+        move.w  diff,d1
+        mulu    #72,d1
+        add.w   d1,a2
+        move.w  place,d1
+        mulu    #18,d1
+        lea     18(a2,d1.w),a3  ; a3 = name string position
+
+        ; Simple input: just wait for ENTER
+        ; Full keyboard input would require key->ASCII mapping
+        ; For now, leave name blank and accept
+        moveq   #14,d0
+name_clear:
+        move.b  #32,(a3)+       ; Fill with spaces
+        dbra    d0,name_clear
+
+        ; Wait for ENTER key
+name_wait:
+        bsr     idle_call
+        cmp.w   #13,d0          ; ENTER?
+        bne     name_wait
+
+        popm.l  d0-d4/a0-a3
         rts
 
 ; Show the current difficulty
@@ -769,24 +795,59 @@ ShowDiff:
 ; Show the high score table
 ShowScores:
         pushm.l d0-d4/a0-a3
+
+        ; Clear score display area
         lea     LCD_MEM+(55*30),a0
         move.w  #(30*45)/4,d0
 scoreclr:
         clr.l   (a0)+
         dbra    d0,scoreclr
+
+        ; Get high score data for current difficulty
         lea     rankstr(pc),a3
         lea     hiscores(PC),a2
         move.w  diff,d1
         mulu    #72,d1
         add.w   d1,a2
-        moveq   #58,d4
-        moveq   #3,d3
+
+        moveq   #58,d4          ; y position
+        moveq   #3,d3           ; 4 entries (0-3)
+
 ShowNextScore:
-        ; TODO: Draw strings at specific positions
-        adda.l  #3,a3
-        adda.l  #18,a2
-        addq    #8,d4
+        ; Draw rank number (1), 2), etc)
+        move.w  #4,-(sp)
+        pea     (a3)
+        move.w  d4,-(sp)
+        move.w  #5,-(sp)
+        jsr     call_124        ; DrawStrXY
+        lea     10(sp),sp
+
+        ; Draw name
+        move.w  #4,-(sp)
+        pea     (a2)
+        move.w  d4,-(sp)
+        move.w  #25,-(sp)
+        jsr     call_124
+        lea     10(sp),sp
+
+        ; Draw score (convert number at offset 16)
+        move.w  16(a2),d0
+        lea     strend,a0
+        moveq   #4,d1
+        bsr     ConvStr
+        move.w  #4,-(sp)
+        pea     (a0)
+        move.w  d4,-(sp)
+        move.w  #121,-(sp)
+        jsr     call_124
+        lea     10(sp),sp
+
+        ; Next entry
+        adda.l  #3,a3           ; Next rank string
+        adda.l  #18,a2          ; Next score entry
+        addq    #8,d4           ; Next y position
         dbra    d3,ShowNextScore
+
         popm.l  d0-d4/a0-a3
         rts
 
