@@ -343,18 +343,197 @@ huffman_extract:
         rts
 
 ; Sprite drawing implementation
+; put_sprite2_impl - Draw sprite with separate mask
+; Inputs:
+;   d0.w = x position (pixels)
+;   d1.w = y position (pixels)
+;   a0 = sprite data (width, height, then data bytes)
+;   a2 = mask data (points to mask bytes, no header)
+; Sprite format: dc.w width, height, then height bytes of 8-bit data
 put_sprite2_impl:
-        ; d0.w = x, d1.w = y, a0 = sprite data, a2 = mask
-        ; TODO: Implement sprite drawing
+        pushm.l d0-d7/a0-a3
+
+        ; Get sprite dimensions
+        move.w  (a0)+,d2        ; width (in pixels, usually 8)
+        move.w  (a0)+,d3        ; height (in scanlines)
+
+        ; Calculate screen address
+        ; addr = LCD_MEM + (y * 30) + (x / 8)
+        lea     LCD_MEM,a1
+        move.w  d1,d4
+        mulu.w  #30,d4          ; y * 30
+        add.w   d4,a1           ; a1 = LCD_MEM + y*30
+
+        move.w  d0,d4
+        lsr.w   #3,d4           ; x / 8 (byte offset)
+        add.w   d4,a1           ; a1 = screen address
+
+        ; Get bit shift amount (x & 7)
+        move.w  d0,d5
+        and.w   #7,d5           ; d5 = shift amount (0-7)
+
+        ; Draw sprite scanlines
+        subq.w  #1,d3           ; height-1 for dbra
+put_s2_loop:
+        move.b  (a0)+,d6        ; sprite byte
+        move.b  (a2)+,d7        ; mask byte
+
+        ; Apply mask and sprite to screen
+        ; screen = (screen & mask) | sprite
+        tst.w   d5              ; aligned?
+        beq.s   put_s2_aligned
+
+        ; Shift sprite and mask by d5 bits
+        lsl.w   #8,d6           ; make room for shifted bits
+        lsl.w   #8,d7
+        lsr.w   d5,d6           ; shift sprite right
+        lsr.w   d5,d7           ; shift mask right
+
+        ; Apply to two bytes
+        move.b  (a1),d4
+        and.b   d7,d4           ; screen & mask (high byte)
+        or.b    d6,d4           ; | sprite
+        move.b  d4,(a1)
+
+        swap    d6
+        swap    d7
+        move.b  1(a1),d4
+        and.b   d7,d4           ; screen & mask (low byte)
+        or.b    d6,d4           ; | sprite
+        move.b  d4,1(a1)
+        bra.s   put_s2_next
+
+put_s2_aligned:
+        ; Byte-aligned, simpler case
+        move.b  (a1),d4
+        and.b   d7,d4           ; screen & mask
+        or.b    d6,d4           ; | sprite
+        move.b  d4,(a1)
+
+put_s2_next:
+        add.w   #30,a1          ; next scanline
+        dbra    d3,put_s2_loop
+
+        popm.l  d0-d7/a0-a3
         rts
 
+; put_sprite_mask_impl - Draw sprite with embedded mask
+; Inputs:
+;   d0.w = x position (pixels)
+;   d1.w = y position (pixels)
+;   d3.b = mode (0 = normal XOR, others TBD)
+;   a0 = sprite pointer (width, height, mask bytes, then sprite bytes)
+; Format: dc.w width, height, then height mask bytes, then height sprite bytes
 put_sprite_mask_impl:
-        ; d0.w = x, d1.w = y, d3.b = mode, a0 = sprite
-        ; TODO: Implement masked sprite drawing
+        pushm.l d0-d7/a0-a3
+
+        ; Get sprite dimensions
+        move.w  (a0)+,d2        ; width (in pixels)
+        move.w  (a0)+,d4        ; height (in scanlines)
+        move.w  d4,d7           ; save height
+
+        ; a0 now points to mask data
+        ; sprite data is at a0 + height bytes
+        move.l  a0,a2           ; a2 = mask pointer
+        lea     0(a0,d4.w),a3   ; a3 = sprite pointer (mask + height)
+
+        ; Calculate screen address
+        lea     LCD_MEM,a1
+        move.w  d1,d4
+        mulu.w  #30,d4
+        add.w   d4,a1           ; a1 = LCD_MEM + y*30
+
+        move.w  d0,d4
+        lsr.w   #3,d4           ; x / 8
+        add.w   d4,a1           ; a1 = screen address
+
+        ; Get bit shift
+        move.w  d0,d5
+        and.w   #7,d5           ; d5 = shift (0-7)
+
+        ; Draw sprite scanlines
+        subq.w  #1,d7           ; height-1 for dbra
+put_sm_loop:
+        move.b  (a2)+,d6        ; mask byte
+        move.b  (a3)+,d4        ; sprite byte
+
+        tst.w   d5              ; aligned?
+        beq.s   put_sm_aligned
+
+        ; Shift for unaligned position
+        lsl.w   #8,d6
+        lsl.w   #8,d4
+        lsr.w   d5,d6
+        lsr.w   d5,d4
+
+        ; First byte
+        push.l  d4
+        move.b  (a1),d4
+        and.b   d6,d4           ; mask screen
+        swap    d6
+        or.b    d6,d4           ; OR with sprite
+        pop.l   d6
+        move.b  d4,(a1)
+
+        ; Second byte
+        swap    d4
+        move.b  1(a1),d6
+        swap    d4
+        and.b   d4,d6           ; mask screen
+        swap    d4
+        or.b    d4,d6           ; OR with sprite
+        move.b  d6,1(a1)
+        bra.s   put_sm_next
+
+put_sm_aligned:
+        ; Byte-aligned
+        push.l  d4
+        move.b  (a1),d4
+        and.b   d6,d4           ; mask screen
+        pop.l   d6
+        or.b    d6,d4           ; OR with sprite
+        move.b  d4,(a1)
+
+put_sm_next:
+        add.w   #30,a1          ; next scanline
+        dbra    d7,put_sm_loop
+
+        popm.l  d0-d7/a0-a3
         rts
 
+; Simple dialog box - just displays centered message
+; Uses youdiedlg data: x, y, width, height, border, fill, text pointer
 show_dialog_impl:
-        ; TODO: Implement simple dialog
+        pushm.l d0-d3/a0-a1
+
+        ; Draw a simple filled rectangle for dialog background
+        lea     youdiedlg(pc),a0
+        move.w  (a0)+,d0        ; x
+        move.w  (a0)+,d1        ; y
+        move.w  (a0)+,d2        ; width
+        move.w  (a0)+,d3        ; height
+        ; Skip border and fill values
+        addq.l  #4,a0
+        move.l  (a0),a1         ; text pointer
+
+        ; Draw filled box (simple implementation - just clear area)
+        ; Could be improved with actual rectangle drawing
+
+        ; Draw the crash text centered
+        ; Calculate center: x + (width/2) - (strlen*3)
+        move.w  d0,d0
+        add.w   #20,d0          ; Approximate center offset
+
+        ; Draw "CRASH!!!" using AMS DrawStrXY
+        move.w  #4,-(sp)        ; font
+        pea     (a1)            ; text
+        move.w  d1,-(sp)        ; y
+        add.w   #10,2(sp)       ; y + 10 for vertical center
+        move.w  d0,-(sp)        ; x
+        jsr     call_124        ; DrawStrXY
+        lea     10(sp),sp
+
+        popm.l  d0-d3/a0-a1
         rts
 
 ; String drawing helpers (using AMS DrawStrXY)

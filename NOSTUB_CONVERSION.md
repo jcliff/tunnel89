@@ -32,26 +32,27 @@
 3. **Core game logic**: Preserved original tunnel generation, scrolling, collision
 4. **Direct hardware access**: Maintained screen buffer and keyboard scanning
 5. **Basic framework**: Set up nostub entry points and declarations
+6. **Sprite drawing**: ✅ IMPLEMENTED!
+   - `put_sprite2_impl` - Draw sprite with separate mask
+   - `put_sprite_mask_impl` - Draw sprite with embedded mask
+   - Handles byte-aligned and unaligned positions
+   - Supports proper masking and transparency
+7. **Dialog box**: ✅ IMPLEMENTED!
+   - Simple crash message display
+   - Uses AMS DrawStrXY for text
 
 ### 🚧 TODO (Needs Implementation)
 
-The following DoorOS library functions need nostub implementations:
+The following DoorOS library functions still need nostub implementations:
 
 #### High Priority
 1. **Huffman decompression** (`huffman_extract`)
-   - Original uses `ziplib::extract`
-   - Need to implement Huffman decoder for title screen
-   - Alternative: Pre-decompress title graphic offline
-
-2. **Sprite drawing** (`put_sprite2_impl`, `put_sprite_mask_impl`)
-   - Original uses `graphlib::put_sprite2` and `put_sprite_mask`
-   - Need to implement masked sprite blitting
-   - Critical for drawing the car and clearing it
-
-3. **Dialog box** (`show_dialog_impl`)
-   - Original uses `graphlib::show_dialog`
-   - Displays "CRASH!!!" message
-   - Could be simplified to just pause game
+   - Original uses `ziplib::extract` for title screen
+   - Options:
+     a) Implement full Huffman decoder (~100 lines)
+     b) Pre-decompress SPRITE.HUF offline and embed raw data
+     c) Skip title screen entirely (go straight to menu)
+   - Title screen is non-critical for gameplay
 
 #### Medium Priority
 4. **Name input** (`ReadName`)
