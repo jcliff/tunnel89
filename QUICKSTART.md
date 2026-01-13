@@ -1,6 +1,17 @@
 # 🏎️ TUNNEL v1.6 - Quick Start Guide
 
-## The Fastest Way to Play
+## 🌐 Access Online (Easiest!)
+
+**Already deployed to the web?** Just visit:
+```
+https://jcliff.github.io/tunnel89/
+```
+
+Not deployed yet? See **DEPLOYMENT.md** for 2-minute setup instructions!
+
+---
+
+## 💻 Local Setup (Alternative)
 
 ### Step 1: Start the Server
 
