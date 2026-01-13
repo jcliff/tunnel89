@@ -121,8 +121,22 @@
 
         <div class="info-box" style="background: rgba(100, 50, 0, 0.5); border-color: #ff9900;">
             <h2 style="color: #ff9900;">⚠️ IMPORTANT: DoorOS Required!</h2>
-            <p><strong>This game requires DoorOS</strong>, a kernel for TI-89 that allows assembly programs with direct hardware access. The web-based emulator below uses PedroM (open-source OS) which is <strong>NOT compatible</strong> with DoorOS programs.</p>
+            <p><strong>This game (v1.6) requires DoorOS</strong>, a kernel for TI-89 that allows assembly programs with direct hardware access. The web-based emulator below uses PedroM (open-source OS) which is <strong>NOT compatible</strong> with DoorOS programs.</p>
             <p style="font-size: 1.1em; margin-top: 15px;"><strong>To actually play this game, use TiEmu desktop emulator with TI-89 ROM + DoorOS kernel.</strong></p>
+        </div>
+
+        <div class="info-box" style="background: rgba(0, 80, 120, 0.5); border-color: #00ccff;">
+            <h2 style="color: #00ccff;">🚧 NEW: Nostub Conversion (Work in Progress)</h2>
+            <p><strong>We're converting the game to a "nostub" program!</strong> This will allow it to run on <strong>stock AMS</strong> (official TI-89 OS) without requiring DoorOS or any kernel.</p>
+            <h3 style="color: #00ccff; margin-top: 15px;">Benefits of Nostub:</h3>
+            <ul>
+                <li>✅ Works on <strong>any TI-89/89 Titanium</strong> without modifications</li>
+                <li>✅ Compatible with <strong>all modern emulators</strong></li>
+                <li>✅ No kernel installation required</li>
+                <li>✅ More stable and easier to distribute</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Status:</strong> Framework complete, core library functions need implementation. See <span class="code-snippet">NOSTUB_CONVERSION.md</span> for details!</p>
+            <p><strong>Files:</strong> <span class="code-snippet">tunnel_nostub.asm</span> (source code)</p>
         </div>
 
         <div class="button-container">
