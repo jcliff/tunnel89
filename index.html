@@ -119,29 +119,57 @@
             </div>
         </div>
 
+        <div class="info-box" style="background: rgba(100, 50, 0, 0.5); border-color: #ff9900;">
+            <h2 style="color: #ff9900;">⚠️ IMPORTANT: DoorOS Required!</h2>
+            <p><strong>This game requires DoorOS</strong>, a kernel for TI-89 that allows assembly programs with direct hardware access. The web-based emulator below uses PedroM (open-source OS) which is <strong>NOT compatible</strong> with DoorOS programs.</p>
+            <p style="font-size: 1.1em; margin-top: 15px;"><strong>To actually play this game, use TiEmu desktop emulator with TI-89 ROM + DoorOS kernel.</strong></p>
+        </div>
+
         <div class="button-container">
-            <a href="./emulator/index.html" class="launch-button">🚀 LAUNCH TI-89 EMULATOR</a>
+            <a href="./emulator/index.html" class="launch-button" style="opacity: 0.7;">🔍 EXPLORE TI-89 EMULATOR (PedroM only)</a>
         </div>
 
         <div style="text-align: center; margin: 20px 0;">
             <a href="./tunnel.89z" download style="color: #00ff00; text-decoration: none; padding: 10px 20px; border: 2px solid #00ff00; border-radius: 5px; display: inline-block;">
-                ⬇️ Download tunnel.89z (for TiEmu or real hardware)
+                ⬇️ Download tunnel.89z (Requires DoorOS!)
             </a>
         </div>
 
         <div class="info-box">
-            <h2>🎮 How to Load and Play</h2>
+            <h2>🎮 How to Actually Play This Game</h2>
+            <p><strong>Recommended: TiEmu Desktop Emulator</strong></p>
             <ol>
-                <li>Click the <strong>LAUNCH TI-89 EMULATOR</strong> button above</li>
-                <li>Wait for the calculator to boot (you'll see the PedroM screen)</li>
-                <li>The emulator uses PedroM, an open-source TI-89 operating system</li>
-                <li>To load the game:
+                <li><strong>Install TiEmu:</strong>
                     <ul>
-                        <li><strong>Method 1:</strong> Use the emulator's built-in file transfer feature (if available)</li>
-                        <li><strong>Method 2:</strong> Look for a "Load Program" or "Link" option in the emulator</li>
-                        <li><strong>File to load:</strong> <span class="code-snippet">tunnel.89z</span> (located in the root directory)</li>
+                        <li>Ubuntu/Debian: <span class="code-snippet">sudo apt-get install tiemu</span></li>
+                        <li>macOS: <span class="code-snippet">brew install tiemu</span></li>
+                        <li>Windows: Download from <a href="http://lpg.ticalc.org/prj_tiemu/" style="color: #00ff00;">lpg.ticalc.org/prj_tiemu</a></li>
                     </ul>
                 </li>
+                <li><strong>Get TI-89 ROM:</strong> You need a ROM dump from a real TI-89 (legal if you own one)</li>
+                <li><strong>Install DoorOS kernel:</strong> Download from ticalc.org and install via TiEmu</li>
+                <li><strong>Load tunnel.89z:</strong> File → Send file to TI → Select tunnel.89z</li>
+                <li><strong>Run the game:</strong> Press <span class="code-snippet">2nd</span> + <span class="code-snippet">-</span> (VAR-LINK), find "tunnel", press ENTER</li>
+            </ol>
+
+            <h3 style="margin-top: 20px;">Why the Web Emulator Won't Work</h3>
+            <p>The web emulator uses PedroM (open-source TI-89 OS) for legal reasons. However, this game was compiled for:</p>
+            <ul>
+                <li><span class="code-snippet">doorsos.h</span> - DoorOS kernel API</li>
+                <li>Direct hardware access ($4C00 framebuffer, $600018 keyboard port)</li>
+                <li>DoorOS-specific memory layout and function calls</li>
+            </ul>
+            <p>PedroM and DoorOS are incompatible, so the .89z file won't run on the web emulator.</p>
+        </div>
+
+        <div class="info-box">
+            <h2>📱 Or Use Real Hardware!</h2>
+            <p>If you have an actual TI-89 calculator:</p>
+            <ol>
+                <li>Install <strong>TI-Connect</strong> from Texas Instruments</li>
+                <li>Install <strong>DoorOS kernel</strong> on your calculator</li>
+                <li>Transfer <span class="code-snippet">tunnel.89z</span> via USB</li>
+                <li>Run from VAR-LINK!</li>
             </ol>
         </div>
 
