@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US Construction Heatmap (1492-Present)</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Leaflet.heat plugin -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .controls-panel {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 26, 26, 0.95);
+            padding: 25px 40px;
+            border-radius: 15px;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            min-width: 600px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .year-display {
+            text-align: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff6b35;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(255, 107, 53, 0.5);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timeline-container {
+            margin: 20px 0;
+        }
+
+        .timeline-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #2d4059, #ff6b35);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .timeline-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ff6b35;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 107, 53, 0.7);
+            transition: all 0.2s;
+        }
+
+        .timeline-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 25px rgba(255, 107, 53, 0.9);
+        }
+
+        .timeline-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ff6b35;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 15px rgba(255, 107, 53, 0.7);
+            transition: all 0.2s;
+        }
+
+        .timeline-slider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 25px rgba(255, 107, 53, 0.9);
+        }
+
+        .timeline-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .control-btn.playing {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            max-width: 300px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-panel h2 {
+            color: #ff6b35;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .info-panel .stat {
+            color: #ddd;
+            margin: 10px 0;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-panel .stat-value {
+            color: #ff6b35;
+            font-weight: bold;
+        }
+
+        .title-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            padding: 20px 30px;
+            border-radius: 10px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .title-panel h1 {
+            color: #ff6b35;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .title-panel p {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 40px;
+            right: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .legend-title {
+            color: #ff6b35;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .legend-gradient {
+            width: 200px;
+            height: 20px;
+            background: linear-gradient(to right,
+                rgba(0, 0, 255, 0.3),
+                rgba(0, 255, 255, 0.5),
+                rgba(0, 255, 0, 0.6),
+                rgba(255, 255, 0, 0.7),
+                rgba(255, 165, 0, 0.8),
+                rgba(255, 0, 0, 0.9));
+            border-radius: 3px;
+        }
+
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            color: #aaa;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <div class="title-panel">
+        <h1>US Construction Heatmap</h1>
+        <p>Historical construction activity (1492-2026)</p>
+    </div>
+
+    <div class="info-panel">
+        <h2>Current Era</h2>
+        <div class="stat">
+            <span>Year:</span>
+            <span class="stat-value" id="era-year">1492</span>
+        </div>
+        <div class="stat">
+            <span>Active Sites:</span>
+            <span class="stat-value" id="active-sites">0</span>
+        </div>
+        <div class="stat">
+            <span>Total Built:</span>
+            <span class="stat-value" id="total-built">0</span>
+        </div>
+        <div class="stat">
+            <span>Era:</span>
+            <span class="stat-value" id="era-name">Colonial Era</span>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-title">Construction Density</div>
+        <div class="legend-gradient"></div>
+        <div class="legend-labels">
+            <span>Low</span>
+            <span>High</span>
+        </div>
+    </div>
+
+    <div class="controls-panel">
+        <div class="year-display" id="year-display">1492</div>
+        <div class="timeline-container">
+            <input type="range" min="1492" max="2026" value="1492" class="timeline-slider" id="timeline-slider">
+            <div class="timeline-labels">
+                <span>1492</span>
+                <span>1600</span>
+                <span>1700</span>
+                <span>1800</span>
+                <span>1900</span>
+                <span>2000</span>
+                <span>2026</span>
+            </div>
+        </div>
+        <div class="button-group">
+            <button class="control-btn" id="play-btn">▶ Play</button>
+            <button class="control-btn" id="reset-btn">⟲ Reset</button>
+            <button class="control-btn" id="speed-btn">Speed: 1x</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize map centered on continental US
+        const map = L.map('map', {
+            zoomControl: true,
+            attributionControl: true
+        }).setView([39.8283, -98.5795], 5);
+
+        // Add tile layer
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Historical construction data generator
+        function generateConstructionData() {
+            const data = [];
+
+            // Major historical construction events and settlements
+            const historicalSites = [
+                // Colonial Era (1492-1700)
+                { year: 1492, lat: 25.7617, lon: -80.1918, name: "Spanish Landing Florida", intensity: 0.3 },
+                { year: 1565, lat: 29.9511, lon: -81.3124, name: "St. Augustine", intensity: 0.4 },
+                { year: 1607, lat: 37.2707, lon: -76.7075, name: "Jamestown", intensity: 0.5 },
+                { year: 1620, lat: 42.3601, lon: -71.0589, name: "Plymouth", intensity: 0.5 },
+                { year: 1630, lat: 42.3601, lon: -71.0589, name: "Boston", intensity: 0.6 },
+                { year: 1664, lat: 40.7128, lon: -74.0060, name: "New York", intensity: 0.6 },
+                { year: 1682, lat: 39.9526, lon: -75.1652, name: "Philadelphia", intensity: 0.6 },
+
+                // 18th Century (1700-1800)
+                { year: 1718, lat: 29.9511, lon: -90.0715, name: "New Orleans", intensity: 0.6 },
+                { year: 1769, lat: 37.7749, lon: -122.4194, name: "San Francisco", intensity: 0.5 },
+                { year: 1776, lat: 38.9072, lon: -77.0369, name: "Washington DC", intensity: 0.7 },
+                { year: 1788, lat: 39.7392, lon: -104.9903, name: "Denver founding", intensity: 0.4 },
+
+                // 19th Century Expansion (1800-1900)
+                { year: 1803, lat: 38.6270, lon: -90.1994, name: "St. Louis", intensity: 0.7 },
+                { year: 1830, lat: 41.8781, lon: -87.6298, name: "Chicago", intensity: 0.8 },
+                { year: 1845, lat: 29.7604, lon: -95.3698, name: "Houston", intensity: 0.7 },
+                { year: 1850, lat: 37.7749, lon: -122.4194, name: "SF Gold Rush", intensity: 0.9 },
+                { year: 1858, lat: 39.7392, lon: -104.9903, name: "Denver", intensity: 0.8 },
+                { year: 1867, lat: 47.6062, lon: -122.3321, name: "Seattle", intensity: 0.6 },
+                { year: 1869, lat: 41.1456, lon: -112.0166, name: "Transcontinental Railroad", intensity: 0.8 },
+                { year: 1885, lat: 33.4484, lon: -112.0740, name: "Phoenix", intensity: 0.6 },
+
+                // 20th Century Boom (1900-2000)
+                { year: 1901, lat: 34.0522, lon: -118.2437, name: "Los Angeles", intensity: 0.9 },
+                { year: 1925, lat: 25.7617, lon: -80.1918, name: "Miami", intensity: 0.8 },
+                { year: 1931, lat: 40.7128, lon: -74.0060, name: "Empire State Building", intensity: 1.0 },
+                { year: 1936, lat: 36.0156, lon: -114.7375, name: "Hoover Dam", intensity: 0.9 },
+                { year: 1956, lat: 39.8283, lon: -98.5795, name: "Interstate Highway System", intensity: 1.0 },
+                { year: 1973, lat: 40.7128, lon: -74.0060, name: "World Trade Center", intensity: 1.0 },
+
+                // Modern Era (2000-2026)
+                { year: 2004, lat: 42.3601, lon: -71.0589, name: "Big Dig Complete", intensity: 0.9 },
+                { year: 2014, lat: 40.7128, lon: -74.0060, name: "One World Trade", intensity: 1.0 },
+                { year: 2020, lat: 30.2672, lon: -97.7431, name: "Austin Tech Boom", intensity: 0.9 }
+            ];
+
+            // Generate data points with gradual growth over time
+            historicalSites.forEach(site => {
+                // Add the main site
+                data.push({
+                    year: site.year,
+                    lat: site.lat,
+                    lon: site.lon,
+                    intensity: site.intensity
+                });
+
+                // Add surrounding development (decades after founding)
+                for (let offset = 10; offset < 100; offset += 10) {
+                    if (site.year + offset <= 2026) {
+                        // Add 3-8 nearby construction sites per decade
+                        const numSites = Math.floor(Math.random() * 6) + 3;
+                        for (let i = 0; i < numSites; i++) {
+                            data.push({
+                                year: site.year + offset,
+                                lat: site.lat + (Math.random() - 0.5) * 2,
+                                lon: site.lon + (Math.random() - 0.5) * 2,
+                                intensity: site.intensity * (0.3 + Math.random() * 0.4)
+                            });
+                        }
+                    }
+                }
+            });
+
+            // Add general growth across major metro areas
+            const metros = [
+                { lat: 40.7128, lon: -74.0060 }, // NYC
+                { lat: 34.0522, lon: -118.2437 }, // LA
+                { lat: 41.8781, lon: -87.6298 }, // Chicago
+                { lat: 29.7604, lon: -95.3698 }, // Houston
+                { lat: 33.4484, lon: -112.0740 }, // Phoenix
+                { lat: 39.9526, lon: -75.1652 }, // Philadelphia
+                { lat: 29.4241, lon: -98.4936 }, // San Antonio
+                { lat: 32.7767, lon: -96.7970 }, // Dallas
+                { lat: 37.3382, lon: -121.8863 }, // San Jose
+                { lat: 30.2672, lon: -97.7431 }  // Austin
+            ];
+
+            // Accelerating construction density in modern era
+            for (let year = 1900; year <= 2026; year += 5) {
+                const pointsPerYear = Math.floor((year - 1900) / 10) + 20; // More construction over time
+
+                metros.forEach(metro => {
+                    for (let i = 0; i < pointsPerYear; i++) {
+                        data.push({
+                            year: year,
+                            lat: metro.lat + (Math.random() - 0.5) * 1.5,
+                            lon: metro.lon + (Math.random() - 0.5) * 1.5,
+                            intensity: 0.2 + Math.random() * 0.6
+                        });
+                    }
+                });
+            }
+
+            return data;
+        }
+
+        const constructionData = generateConstructionData();
+        let heatmapLayer = null;
+        let currentYear = 1492;
+        let isPlaying = false;
+        let playInterval = null;
+        let playSpeed = 1;
+
+        // Get era name based on year
+        function getEraName(year) {
+            if (year < 1600) return "Colonial Era";
+            if (year < 1776) return "Colonial Period";
+            if (year < 1800) return "Revolutionary Era";
+            if (year < 1865) return "Antebellum Period";
+            if (year < 1900) return "Gilded Age";
+            if (year < 1920) return "Progressive Era";
+            if (year < 1945) return "Interwar Period";
+            if (year < 1970) return "Post-War Boom";
+            if (year < 2000) return "Late 20th Century";
+            return "Modern Era";
+        }
+
+        // Update heatmap for given year
+        function updateHeatmap(year) {
+            currentYear = year;
+
+            // Filter data up to current year
+            const filteredData = constructionData
+                .filter(point => point.year <= year)
+                .map(point => {
+                    // Decay older construction intensity slightly
+                    const age = year - point.year;
+                    const decayFactor = Math.max(0.3, 1 - (age / 1000));
+                    return [point.lat, point.lon, point.intensity * decayFactor];
+                });
+
+            // Remove old heatmap layer
+            if (heatmapLayer) {
+                map.removeLayer(heatmapLayer);
+            }
+
+            // Add new heatmap layer
+            if (filteredData.length > 0) {
+                heatmapLayer = L.heatLayer(filteredData, {
+                    radius: 25,
+                    blur: 35,
+                    maxZoom: 10,
+                    max: 1.0,
+                    gradient: {
+                        0.0: 'rgba(0, 0, 255, 0)',
+                        0.2: 'rgba(0, 0, 255, 0.5)',
+                        0.4: 'rgba(0, 255, 255, 0.6)',
+                        0.6: 'rgba(0, 255, 0, 0.7)',
+                        0.7: 'rgba(255, 255, 0, 0.8)',
+                        0.85: 'rgba(255, 165, 0, 0.9)',
+                        1.0: 'rgba(255, 0, 0, 1.0)'
+                    }
+                }).addTo(map);
+            }
+
+            // Update UI
+            document.getElementById('year-display').textContent = year;
+            document.getElementById('timeline-slider').value = year;
+            document.getElementById('era-year').textContent = year;
+            document.getElementById('era-name').textContent = getEraName(year);
+
+            // Calculate stats
+            const activeSites = constructionData.filter(p => p.year === year).length;
+            const totalBuilt = constructionData.filter(p => p.year <= year).length;
+
+            document.getElementById('active-sites').textContent = activeSites;
+            document.getElementById('total-built').textContent = totalBuilt.toLocaleString();
+        }
+
+        // Timeline slider
+        const slider = document.getElementById('timeline-slider');
+        slider.addEventListener('input', (e) => {
+            if (isPlaying) {
+                stopAnimation();
+            }
+            updateHeatmap(parseInt(e.target.value));
+        });
+
+        // Play/Pause button
+        const playBtn = document.getElementById('play-btn');
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                stopAnimation();
+            } else {
+                startAnimation();
+            }
+        });
+
+        function startAnimation() {
+            isPlaying = true;
+            playBtn.textContent = '⏸ Pause';
+            playBtn.classList.add('playing');
+
+            playInterval = setInterval(() => {
+                currentYear += playSpeed;
+                if (currentYear > 2026) {
+                    currentYear = 1492;
+                }
+                updateHeatmap(currentYear);
+            }, 100);
+        }
+
+        function stopAnimation() {
+            isPlaying = false;
+            playBtn.textContent = '▶ Play';
+            playBtn.classList.remove('playing');
+            if (playInterval) {
+                clearInterval(playInterval);
+                playInterval = null;
+            }
+        }
+
+        // Reset button
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            stopAnimation();
+            currentYear = 1492;
+            updateHeatmap(1492);
+        });
+
+        // Speed button
+        const speedBtn = document.getElementById('speed-btn');
+        const speeds = [1, 2, 5, 10];
+        let speedIndex = 0;
+
+        speedBtn.addEventListener('click', () => {
+            speedIndex = (speedIndex + 1) % speeds.length;
+            playSpeed = speeds[speedIndex];
+            speedBtn.textContent = `Speed: ${playSpeed}x`;
+
+            if (isPlaying) {
+                stopAnimation();
+                startAnimation();
+            }
+        });
+
+        // Initialize with 1492
+        updateHeatmap(1492);
+    </script>
+</body>
+</html>
